@@ -88,6 +88,9 @@ TARGET_LIST   = $(PROJECT).list
 TARGET_PREFIX =
 TARGET_SUBFIX =
 
+# default template type
+TEMPLATE ?= app
+
 # app subfix
 ifeq ($(TEMPLATE), app)
 ifeq ($(OS), Windows_NT)
@@ -139,9 +142,11 @@ ifeq ($(TEMPLATE), app)
 else ifeq ($(TEMPLATE), sharedlib)
 	@echo "  LD      $(@F)"
 	$(Q)$(LD) $(LIBRARY_LDFLAGS) $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS) --output $@
-else
+else ifeq ($(TEMPLATE), staticlib)
 	@echo "  AR      $(@F)"
 	$(Q)$(AR) $(ARFLAGS) $@ $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS)
+else
+	$(error unknown TEMPLATE)
 endif
 
 size: $(TARGET)
