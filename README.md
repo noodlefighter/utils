@@ -8,4 +8,5 @@
 | linux-module-example  | linux模块目录外构建例子                       |
 | c_common              | C常用                                         |
 | math-script           | 数学相关的开发辅助脚本                        |
+| media-script          | 多媒体相关的开发辅助脚本                      |
 
