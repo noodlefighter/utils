@@ -157,7 +157,7 @@ size: $(TARGET)
 	@echo "  OBJDUMP $@"
 	$(Q)$(OBJDUMP) -S $< > $@
 
-$(OBJ_DIR)%.o: %.s
+$(OBJ_DIR)/%.o: %.s
 	@echo "  AS      $(<F)"
 	$(Q)$(CC) $(ASFLAGS) -o $@ -c $<
 
