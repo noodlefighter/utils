@@ -44,5 +44,10 @@ VPATH    += $(SRCDIR)
 USR_INCS += $(SRCDIR)
 USR_SRCS += $(wildcard $(SRCDIR)/*.c)
 
+# User can add custom target like:
+# default_target: custom_target all
+# custom_target:
+# 	touch $@ 
+
 # include common
 include common.mk
