@@ -1,0 +1,9 @@
+// 该文件由 gen_comm_handler.py 自动生成，请不要手动修改
+
+#include "comm_handler.h"
+
+const struct comm_handler_entry comm_handler_table[COMM_HANDLER_COUNT] = {
+@@ for cmd_set,cmd in cmd_list @@
+    { CMD_CODE(@= cmd_set =@, @= cmd =@), @= cmd.lower() =@_handler, "@= cmd.lower() =@" } @= ',' if not loop.last =@
+@@ endfor @@
+};
