@@ -50,10 +50,7 @@ ifeq ($(TEMPLATE), sharedlib)
 endif
 
 LIBRARY_DIRS = $(USR_LIBS)
-PREDEFINES   = $(USR_DEFS)
 
-CFLAGS   += $(COMPILE_OPTS) $(INCLUDE_DIRS) $(PREDEFINES)
-CXXFLAGS += $(COMPILE_OPTS) $(INCLUDE_DIRS) $(PREDEFINES)
 ASFLAGS  += $(DEVICE) -x assembler-with-cpp -c
 LDFLAGS  += $(DEVICE)
 LDFLAGS  += -Wl,--gc-sections,-Map=$(PROJECT).map,-cref \
@@ -69,9 +66,8 @@ endif
 # pkg-config packages depends on
 ifneq ($(pkg_packages),)
 	PKG_CONFIG := PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:${SYSROOT}/lib/pkgconfig pkg-config
-	CFLAGS     += $(shell ${PKG_CONFIG} --cflags $(pkg_packages))
-	CXXFLAGS   += $(shell ${PKG_CONFIG} --cflags $(pkg_packages))
-	LDFLAGS    += $(shell ${PKG_CONFIG} --libs   $(pkg_packages))
+	PKG_CFLAGS  = $(shell ${PKG_CONFIG} --cflags $(pkg_packages))
+	PKG_LDFLAGS = $(shell ${PKG_CONFIG} --libs   $(pkg_packages))
 endif
 
 # sysroot for cross compile
@@ -138,13 +134,13 @@ gcc-info:
 $(TARGET): $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS)
 ifeq ($(TEMPLATE), app)
 	@echo "  LD      $(@F)"
-	$(Q)$(LD) $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS) $(LIBRARY_DIRS) $(LDFLAGS) --output $@
+	$(Q)$(LD) $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS) $(LIBRARY_DIRS) $(LDFLAGS) $(PKG_LDFLAGS) --output $@
 else ifeq ($(TEMPLATE), sharedlib)
 	@echo "  LD      $(@F)"
-	$(Q)$(LD) $(LIBRARY_LDFLAGS) $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS) --output $@
+	$(Q)$(LD) $(LIBRARY_LDFLAGS) $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS) $(PKG_LDFLAGS) --output $@
 else ifeq ($(TEMPLATE), staticlib)
 	@echo "  AR      $(@F)"
-	$(Q)$(AR) $(ARFLAGS) $@ $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS)
+	$(Q)$(AR) $(ARFLAGS) $@ $(ASM_OBJS) $(USR_OBJS) $(CPP_OBJS) $(PKG_LDFLAGS)
 else
 	$(error unknown TEMPLATE)
 endif
@@ -163,11 +159,11 @@ $(OBJ_DIR)/%.o: %.s
 
 $(OBJ_DIR)/%.o: %.c
 	@echo "  CC      $(<F)"
-	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
+	$(Q)$(CC) $(INCLUDE_DIRS) $(COMPILE_OPTS) $(USR_DEFS) $(PKG_CFLAGS) $(CFLAGS) -o $@ -c $<
 
 $(OBJ_DIR)/%.o: %.cpp
 	@echo "  CXX     $(<F)"
-	$(Q)$(CXX) $(CXXFLAGS) -o $@ -c $<
+	$(Q)$(CXX) $(INCLUDE_DIRS) $(COMPILE_OPTS) $(USR_DEFS) $(PKG_CFLAGS) $(CXXFLAGS) -o $@ -c $<
 
 clean:
 	@echo "  CLEAN OK!    "
