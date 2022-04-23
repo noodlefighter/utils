@@ -1,0 +1,55 @@
+# refer: https://wiki.archlinux.org/title/PKGBUILD
+
+pkgname=mypack
+pkgver=1.0.0
+pkgrel=1
+epoch=
+pkgdesc=""
+arch=('x86_64')
+url=""
+license=('GPL')
+groups=()
+depends=()
+makedepends=()
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+# source=($pkgname-$pkgver.tar.gz
+#         $pkgname-$pkgver.patch)
+source=()
+noextract=()
+md5sums=() #generate with 'makepkg -g'
+
+prepare() {
+    echo "prepare"
+	# cd "$srcdir/$pkgname-$pkgver"
+	# patch -p1 -i "$srcdir/$pkgname-$pkgver.patch"
+}
+
+build() {
+    echo "build"
+	# cd "$srcdir/$pkgname-$pkgver"
+	# ./configure --prefix=/usr
+	# make
+}
+
+check() {
+    echo "check"
+	# cd "$srcdir/$pkgname-$pkgver"
+	# make -k check
+}
+
+package() {
+    echo "package"
+	# cd "$srcdir/$pkgname-$pkgver"
+	# make DESTDIR="$pkgdir/" install
+
+    # find $srcdir/../files -nae  | xargs cp -rf {} "$pkgdir/"
+    cp -rf $srcdir/../files/* "$pkgdir/"
+}
