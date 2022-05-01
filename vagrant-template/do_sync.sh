@@ -1,11 +1,12 @@
+MYHOST=vagrant@ubuntu-focal
+MYPATH=/home/vagrant/lede
+
 # 同步回下载缓存
-rsync -avl vagrant@ubuntu-xenial:/home/vagrant/yocto/downloads ../yocto
+rsync -avl $MYHOST:$MYPATH/dl ./lede/dl
 
 # 同步回构建好的文件
-mkdir -p ../yocto/build
-rsync -avl vagrant@ubuntu-xenial:/home/vagrant/yocto/build/tmp/deploy/images/mys6ull14x14 ../yocto/build/
-rsync -avl vagrant@ubuntu-xenial:/home/vagrant/yocto/build/tmp/deploy/sdk ../yocto/build/
-rsync -avl vagrant@ubuntu-xenial:/home/vagrant/yocto/build/tmp/work/cortexa7hf-neon-poky-linux-gnueabi/example/ ../yocto/build/example
-rsync -avl vagrant@ubuntu-xenial:/home/vagrant/yocto/build/tmp/work/cortexa7hf-neon-poky-linux-gnueabi/device/ ../yocto/build/device
+mkdir -p ./build
+rsync -avl $MYHOST:$MYPATH/bin ./build/
 
-vagrant rsync
+# 为了执行vagrantfile内定义的rsync，似乎只能reload了，会导致机器重启
+vagrant reload
