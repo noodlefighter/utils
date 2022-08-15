@@ -13,6 +13,13 @@ sinewave_data = np.sin(frequency * x)
 # best to attenuate it before playing, they can get very loud
 sinewave_data = sinewave_data * 0.3
 
+import scipy.io.wavfile as wf
+
+# 写到文件
+# write_data = np.int16(sinewave_data * 32767)
+# wf.write('sinewave.wav', sample_rate, write_data)
+
+# 或者直接播放
 while True:
     sd.play(sinewave_data, sample_rate)
     sd.wait()

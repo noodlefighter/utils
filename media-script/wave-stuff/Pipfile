@@ -1,0 +1,14 @@
+[[source]]
+url = "https://mirror.sjtu.edu.cn/pypi/web/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+sounddevice = "*"
+scipy = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
