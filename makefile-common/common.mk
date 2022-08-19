@@ -5,14 +5,14 @@ endif
 
 CUR_DIR = $(shell pwd)
 TCHAIN ?=
-CC      = $(TCHAIN)gcc
-CXX     = $(TCHAIN)g++
-AS      = $(TCHAIN)gcc
-LD      = $(TCHAIN)g++
-OBJCOPY = $(TCHAIN)objcopy
-AR      = $(TCHAIN)ar
-SIZE    = $(TCHAIN)size
-OBJDUMP = $(TCHAIN)objdump
+CC     ?= $(TCHAIN)gcc
+CXX    ?= $(TCHAIN)g++
+AS     ?= $(TCHAIN)gcc
+LD     ?= $(TCHAIN)g++
+OBJCOPY?= $(TCHAIN)objcopy
+AR     ?= $(TCHAIN)ar
+SIZE   ?= $(TCHAIN)size
+OBJDUMP?= $(TCHAIN)objdump
 
 # Object files to include
 USR_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(USR_SRCS:.c=.o)))
