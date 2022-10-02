@@ -15,3 +15,8 @@ $ vagrant ssh
 $ vagrant destroy
 ```
 
+更新配置：
+```
+$ vagrant reload --provision
+```
+
