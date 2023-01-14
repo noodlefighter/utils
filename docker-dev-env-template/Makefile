@@ -5,7 +5,7 @@ DIR_WORK=$(shell pwd)/..
 all: help
 
 help:
-	@echo "usage: make { build | up | down | ssh | clean }"
+	@echo "usage: make { build | up | down | startup | ssh | clean }"
 
 build:
 	mkdir -p ./tmp
@@ -25,6 +25,9 @@ up:
 down:
 	docker container stop $(IMG_NAME)
 	docker container rm $(IMG_NAME)
+
+startup:
+	docker start ${IMG_NAME} 
 
 ssh:
 	ssh vagrant@$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(IMG_NAME))
