@@ -16,7 +16,7 @@ RUN echo "deb http://mirrors.sjtug.sjtu.edu.cn/ubuntu/ xenial main restricted un
                           lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full \
                           msmtp libssl-dev  libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake \
                           libtool autopoint device-tree-compiler g++-multilib antlr3 gperf \
-                          scons gcc-arm-none-eabi diffstat chrpath \
+                          scons gcc-arm-none-eabi diffstat chrpath tmux \
     && apt-get clean \
     && ln -sf bash /bin/sh
  
