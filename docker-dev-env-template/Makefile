@@ -14,6 +14,7 @@ build:
 
 up:
 	docker run -e LOCAL_USER_ID=$(shell id -u $$USER) -itd \
+		--add-host host.docker.internal:host-gateway \
 		--mount type=bind,source=$(DIR_WORK)/linux,target=/home/vagrant/MYiR-iMX-Linux \
 		--mount type=bind,source=$(DIR_WORK)/uboot,target=/home/vagrant/MYiR-iMX-Uboot \
 		--mount type=bind,source=$(DIR_WORK)/workspace,target=/home/vagrant/workspace \

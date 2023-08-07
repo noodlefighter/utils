@@ -1,0 +1,18 @@
+
+export PROXY_HOST=host.docker.internal
+
+setproxy () {
+	export proxy="http://$PROXY_HOST:7890"
+	export http_proxy=$proxy
+	export https_proxy=$proxy
+	export ftp_proxy=$proxy
+	export all_proxy=$proxy
+	export no_proxy="localhost, 127.0.0.1, ::1"
+}
+unsetproxy () {
+	unset http_proxy
+	unset https_proxy
+	unset ftp_proxy
+	unset no_proxy
+}
+
