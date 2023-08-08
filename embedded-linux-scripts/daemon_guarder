@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# 一个定期探测服务是否存活的脚本
+# 需要保活服务，在启动时创建一个文件到探测目录中，文件名为服务名，脚本就会在监测到未存活时拉起服务
+# 如服务为/etc/init.d/quectel-cm，则在/var/run/daemon_guarder.d/目录下创建一个名为quectel-cm的文件即可
+# 要注意的是服务需要提供status状态，服务启动则返回0，未启动则返回非0
+
+# 设置探测程序的文件夹路径
+folder="/var/run/daemon_guarder.d"
+mkdir -p "$folder"
+
+# 设置探测的时间间隔（秒）
+interval=5
+
+while true; do
+  files=$(ls "$folder")
+  for item in $files; do
+    # 检查程序是否已启动，如果程序未启动，则执行启动命令
+    if [[ ! -e /etc/init.d/"$item" ]] ; then
+      continue
+    fi
+    if ! `/etc/init.d/"$item" status &> /dev/null`; then
+      logger -t daemon_guarder "daemon_guarder: $item is not running, start it"
+      /etc/init.d/"$item" start
+    fi
+  done
+
+  sleep "$interval"
+done
