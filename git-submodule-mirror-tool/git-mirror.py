@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 # 将子模块推送到镜象站、配置gitmodules等
 
