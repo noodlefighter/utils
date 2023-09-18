@@ -56,28 +56,10 @@ lib/CGame++/lib/rapidyaml/ext/c4core/cmake|https://github.com/biojppm/cmake
 $ ./git-mirror.py push
 ```
 
-6. (可选)将镜像仓库的URL写入当前目录的`.gitmodules`文件
+6. 通过镜像拉取子模块
 
-预览`.gitmodules`文件
-
-```
-$ ./git-mirror.py get-gitmodules
-[submodule "lib/CGame++/lib/rapidyaml"]
-	path = lib/CGame++/lib/rapidyaml
-	url = http://example.com/mirror/rapidyaml
-
-[submodule "lib/CGame++/lib/rapidyaml/ext/c4core"]
-	path = lib/CGame++/lib/rapidyaml/ext/c4core
-	url = http://example.com/mirror/c4core
-
-[submodule "lib/CGame++/lib/rapidyaml/ext/c4core/cmake"]
-	path = lib/CGame++/lib/rapidyaml/ext/c4core/cmake
-	url = http://example.com/mirror/c4core-cmake
-```
-
-写入`.gitmodules`文件，然后同步URL到各子模块
+脚本会逐层写入镜像站地址，并执行`git submodule update`
 
 ```
-$ ./git-mirror.py set-gitmodules
-$ git submodules sync --recursive
+$ ./git-mirror.py update-submodules
 ```
