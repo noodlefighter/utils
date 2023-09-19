@@ -24,7 +24,8 @@ with open(CONFIG_FILE, 'r') as f:
             m_dict[submodule_path] = {
                 'source_url': source_url,
                 'mirror_http': MIRROR_SITE_HTTP % mirror_name,
-                'mirror_ssh': MIRROR_SITE_SSH % mirror_name
+                'mirror_ssh': MIRROR_SITE_SSH % mirror_name,
+                'mirror_name': mirror_name
             }
 
 # for m in m_dict:
@@ -61,7 +62,7 @@ def get_submodules(path):
 def submodule_update_recursive(module_dir):
     module_path = os.path.join(ROOTDIR, module_dir)
     modules = get_submodules(module_path)
-    print('进入 %s'%module_dir, 'modules:', modules)
+    print('DIR %s'%module_dir, 'modules:', modules)
 
     # 更新子模块的URL为镜象仓库URL
     for m in modules:
@@ -79,7 +80,6 @@ def submodule_update_recursive(module_dir):
     for m in modules:
         submodule_update_recursive(os.path.join(module_dir, m))
 
-# 推送到镜象仓库
 def push_mirror():
     for m in m_dict:
         mirror_url = m_dict[m]['mirror_ssh']
@@ -89,6 +89,34 @@ def push_mirror():
         else:
             resultStr = 'FAIL'
         print('%s -> %s: %s'%(m, mirror_url, resultStr))
+
+def push_mirror_bare():
+    subprocess.run(['mkdir', '-p', '.submodule-mirror'])
+    with open('.submodule-mirror/.gitignore', 'w') as f:
+        f.write('*')
+
+    for m in m_dict:
+        source_url = m_dict[m]['source_url']
+        mirror_url = m_dict[m]['mirror_ssh']
+        mirror_name = m_dict[m]['mirror_name']
+        repo_path = os.path.join('.submodule-mirror', mirror_name)
+        if not os.path.exists(repo_path):
+            result = subprocess.run(['git', 'clone', '--bare', '--quiet', source_url, repo_path])
+        else:
+            result = subprocess.run(['git', '-C', repo_path, 'fetch'])
+        if result.returncode != 0:
+            print('clone %s -> %s: FAIL'%(source_url, repo_path))
+            continue
+        else:
+            print('clone %s -> %s: OK'%(source_url, repo_path))
+
+
+        result = subprocess.run(['git', '-C', repo_path, 'push', '--quiet', '--mirror', mirror_url])
+        if result.returncode == 0:
+            resultStr = 'OK'
+        else:
+            resultStr = 'FAIL'
+        print('push %s -> %s: %s'%(m, mirror_url, resultStr))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Git Submodule Mirror Tool')
@@ -101,4 +129,5 @@ if __name__ == '__main__':
     elif args.command == 'show':
         show_submodules()
     elif args.command == 'push':
-        push_mirror()
+        # push_mirror()
+        push_mirror_bare()
