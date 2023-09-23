@@ -63,3 +63,35 @@ $ ./git-mirror.py push
 ```
 $ ./git-mirror.py update-submodules
 ```
+
+## 配置文件格式说明
+
+```
+<submodule_path>|<source_url>|<mirror_name>[|<submodule_name>]
+```
+
+### submodule_path
+
+子模块相对于当前git仓库的路径
+
+### source_url
+
+子模块的原始URL
+
+### mirror_name
+
+镜象名，用于生成镜像url，如设置为abc，对应镜像url为"http://example.com/abc"
+
+### submodule_name
+
+（可选）子模块名
+
+当.gitmodules文件中的子模块名和路径不同时使用，下面一例子模块名是`extern/c4core`，与路径`ext/c4core`不同：
+
+```
+[submodule "extern/c4core"]
+	path = ext/c4core
+	url = http://abc.com/c4core
+```
+
+

@@ -14,18 +14,33 @@ CONFIG_FILE = "submodule-mirrors.txt"
 m_dict = {}
 with open(CONFIG_FILE, 'r') as f:
     for line in f:
+        n = 0
         line = line.strip()
         if line:
-            submodule_path, source_url, mirror_name = line.split('|')
+            n += 1
+            s = line.split('|')
+            if len(s) < 3:
+                print('ignore line %d, invalid format' % n)
+                continue
+            submodule_path = s[0]
+            source_url = s[1]
+            mirror_name = s[2]
+            if len(s) >= 4:
+                submodule_name = s[3]
+            else:
+                submodule_name = ''
+
             submodule_path = submodule_path.strip()
             source_url = source_url.strip()
             mirror_name = mirror_name.strip()
+            submodule_name = submodule_name.strip()
 
             m_dict[submodule_path] = {
                 'source_url': source_url,
                 'mirror_http': MIRROR_SITE_HTTP % mirror_name,
                 'mirror_ssh': MIRROR_SITE_SSH % mirror_name,
-                'mirror_name': mirror_name
+                'mirror_name': mirror_name,
+                'submodule_name': submodule_name
             }
 
 # for m in m_dict:
@@ -70,7 +85,10 @@ def submodule_update_recursive(module_dir):
         print(m, entire_m)
         if entire_m in m_dict:
             mirror_http = m_dict[entire_m]['mirror_http']
-            subprocess.run(['git', '-C', module_path, 'config', '-f', '.gitmodules', 'submodule.' + m + '.url', mirror_http])
+            submodule_name = m_dict[entire_m]['submodule_name']
+            if submodule_name == '':
+                submodule_name = m
+            subprocess.run(['git', '-C', module_path, 'config', '-f', '.gitmodules', 'submodule.' + submodule_name + '.url', mirror_http])
             print("set %s -> %s"%(m, mirror_http))
 
     # 拉取
