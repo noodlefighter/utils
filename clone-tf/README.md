@@ -9,7 +9,24 @@
 
 用法：
 
+1. 配置代码中的usb_hub_vid_pid为实际使用的USB HUB的vid和pid
+
+2. （可选）如果需要免sudo命令，则需要为当前用户配置权限，默认能操作磁盘的group为`disk`，如：
+
+```
+$ ls /dev/sda -lah
+brw-rw---- 1 root disk 8, 0 10月22日 15:50 /dev/sda
+```
+
+所以要将当前用户添加进disk组，logout后重新登入：
+
+```
+$ sudo gpasswd -a $USER disk
+```
+
+3. 运行程序
+
 ```
 $ pipenv install
-$ pipenv run sudo python3 ./clone-tf.py
+$ pipenv run python ./clone-tf.py
 ```
