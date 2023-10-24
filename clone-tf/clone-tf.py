@@ -14,9 +14,9 @@ os.chdir(script_dir)
 
 source_dirpath = './tfcard_files'
 parition_name = "tfcard"
-usb_hub_vid_pid = "0bda:5411"
+usbdevice_vid_pid = "14cd:1212"
 
-os.system("rm './mylog.txt'")
+os.remove('./mylog.txt')
 logfile = os.open('./mylog.txt', os.O_RDWR | os.O_CREAT)
 def logfile_write(str):
     os.write(logfile, (str+'\n').encode())
@@ -40,20 +40,16 @@ def get_usb_port(sys_path):
         return 0
 
 # 获取USB存储设备所在的USB HUB的VID:PID
-def get_usb_hub_vid_pid(device):
-    dev_usbport = device.find_parent(subsystem="usb", device_type="usb_device")
-    if dev_usbport is None:
-        return ""
-
-    dev_usbhub = dev_usbport.find_parent(subsystem="usb", device_type="usb_device")
-    if dev_usbhub is None:
+def get_device_vid_pid(device):
+    usbdev = device.find_parent(subsystem="usb", device_type="usb_device")
+    if usbdev is None:
         return ""
 
     hub_vid = ''
     hub_pid = ''
-    with open(os.path.join(dev_usbhub.sys_path, 'idVendor'), 'r') as f:
+    with open(os.path.join(usbdev.sys_path, 'idVendor'), 'r') as f:
         hub_vid = f.read().strip()
-    with open(os.path.join(dev_usbhub.sys_path, 'idProduct'), 'r') as f:
+    with open(os.path.join(usbdev.sys_path, 'idProduct'), 'r') as f:
         hub_pid = f.read().strip()
     return "%s:%s" % (hub_vid, hub_pid)
 
@@ -199,9 +195,9 @@ def main():
             # print(device)
             logfile_write("sys_path: %s" % device.sys_path)
             logfile_write("device_node: %s" % device.device_node)
-            logfile_write("usbhub: %s" % get_usb_hub_vid_pid(device))
+            logfile_write("usbhub: %s" % get_device_vid_pid(device))
 
-            if get_usb_hub_vid_pid(device) == usb_hub_vid_pid:
+            if get_device_vid_pid(device) == usbdevice_vid_pid:
                 usb_port = get_usb_port(device.sys_path)
                 devices.append({
                     "node": device.device_node,
