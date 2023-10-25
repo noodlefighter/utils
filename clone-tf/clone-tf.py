@@ -16,7 +16,6 @@ source_dirpath = './tfcard_files'
 parition_name = "tfcard"
 usbdevice_vid_pid = "14cd:1212"
 
-os.remove('./mylog.txt')
 logfile = os.open('./mylog.txt', os.O_RDWR | os.O_CREAT)
 def logfile_write(str):
     os.write(logfile, (str+'\n').encode())
@@ -96,18 +95,21 @@ def create_exfat_partition(device):
     if res.returncode != 0:
         update_progress(device, 0, "创建分区表失败")
         return False
+    update_progress(device, 1, "创建分区表成功")
+    time.sleep(1)
 
     res = subprocess.run(['parted', '--script', device['node'], 'mkpart', 'primary', 'ext2', '0%', '100%'], stdout=subprocess.PIPE, stderr=logfile)
     if res.returncode != 0:
         update_progress(device, 0, "创建分区失败")
         return False
+    update_progress(device, 1, "创建分区成功")
+    time.sleep(1)    
 
     global parition_name
     res = subprocess.run(['mkfs.exfat', '-n', parition_name, device['node']+'1'], stdout=subprocess.PIPE, stderr=logfile)
     if res.returncode != 0:
         update_progress(device, 0, "格式化分区失败")
         return False
-
     return True
 
 # 挂载分区
@@ -203,6 +205,7 @@ def main():
                     "node": device.device_node,
                     "port": usb_port
                 })
+
 
 
     # 清空全局进度
