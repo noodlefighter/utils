@@ -3,6 +3,7 @@
 # 将子模块推送到镜象站、配置gitmodules等
 
 import os
+import shutil
 import argparse
 import subprocess
 
@@ -111,20 +112,25 @@ def push_mirror():
             resultStr = 'FAIL'
         print('%s -> %s: %s'%(m, mirror_url, resultStr))
 
-def push_mirror_bare():
+def push_mirror_bare(submodule):
     subprocess.run(['mkdir', '-p', '.submodule-mirror'])
     with open('.submodule-mirror/.gitignore', 'w') as f:
         f.write('*')
 
     for m in m_dict:
+        # 若指定了submodule，则只处理它
+        if not submodule is None:
+            if m != submodule:
+                continue
+
         source_url = m_dict[m]['source_url']
         mirror_url = m_dict[m]['mirror_ssh']
         mirror_name = m_dict[m]['mirror_name']
         repo_path = os.path.join('.submodule-mirror', mirror_name)
-        if not os.path.exists(repo_path):
-            result = subprocess.run(['git', 'clone', '--bare', source_url, repo_path])
-        else:
-            result = subprocess.run(['git', '-C', repo_path, 'fetch', '--all', '--tags'])
+        if os.path.exists(repo_path):
+            shutil.rmtree(repo_path)
+
+        result = subprocess.run(['git', 'clone', '--bare', source_url, repo_path])
         if result.returncode != 0:
             print('clone %s -> %s: FAIL'%(source_url, repo_path))
             continue
@@ -141,7 +147,14 @@ def push_mirror_bare():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Git Submodule Mirror Tool')
-    parser.add_argument('command', choices=['show', 'update-submodules', 'push'], help='Command to execute')
+    subparsers = parser.add_subparsers(dest='command', help='Command to execute')
+
+    show_parser = subparsers.add_parser('show', help='Show command')
+
+    update_submodules_parser = subparsers.add_parser('update-submodules', help='Update submodules command')
+
+    push_parser = subparsers.add_parser('push', help='Push command')
+    push_parser.add_argument('submodule', nargs='?', help='submodule name', )
 
     args = parser.parse_args()
 
@@ -150,5 +163,6 @@ if __name__ == '__main__':
     elif args.command == 'show':
         show_submodules()
     elif args.command == 'push':
-        # push_mirror()
-        push_mirror_bare()
+        push_mirror_bare(args.submodule)
+    else:
+        parser.print_help()
