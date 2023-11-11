@@ -94,6 +94,9 @@ def submodule_update_recursive(module_dir):
     # 拉取
     subprocess.run(['git', '-C', module_path, 'submodule', 'update', '--init'])
 
+    # 同步url
+    subprocess.run(['git', '-C', module_path, 'submodule', 'sync'])
+
     # 递归遍例每个子模块
     for m in modules:
         submodule_update_recursive(os.path.join(module_dir, m))
