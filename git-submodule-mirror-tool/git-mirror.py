@@ -122,9 +122,9 @@ def push_mirror_bare():
         mirror_name = m_dict[m]['mirror_name']
         repo_path = os.path.join('.submodule-mirror', mirror_name)
         if not os.path.exists(repo_path):
-            result = subprocess.run(['git', 'clone', '--bare', '--quiet', source_url, repo_path])
+            result = subprocess.run(['git', 'clone', '--bare', source_url, repo_path])
         else:
-            result = subprocess.run(['git', '-C', repo_path, 'fetch'])
+            result = subprocess.run(['git', '-C', repo_path, 'fetch', '--all', '--tags'])
         if result.returncode != 0:
             print('clone %s -> %s: FAIL'%(source_url, repo_path))
             continue
@@ -132,7 +132,7 @@ def push_mirror_bare():
             print('clone %s -> %s: OK'%(source_url, repo_path))
 
 
-        result = subprocess.run(['git', '-C', repo_path, 'push', '--quiet', '--mirror', mirror_url])
+        result = subprocess.run(['git', '-C', repo_path, 'push', '--mirror', mirror_url])
         if result.returncode == 0:
             resultStr = 'OK'
         else:
