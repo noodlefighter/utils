@@ -1,5 +1,6 @@
-
-IMG_NAME=ebsx-dev-env
+DOCKER=sudo podman
+CONTAINER_NAME=h3env
+IMG_NAME=h3-env
 DIR_WORK=$(shell pwd)/..
 
 all: help
@@ -10,28 +11,25 @@ help:
 build:
 	mkdir -p ./tmp
 	cp $(HOME)/.ssh/id_rsa.pub ./tmp/
-	docker build -t $(IMG_NAME) .
+	$(DOCKER) build -t $(IMG_NAME) .
 
 up:
-	docker run -e LOCAL_USER_ID=$(shell id -u $$USER) -itd \
-		--add-host host.docker.internal:host-gateway \
-		--mount type=bind,source=$(DIR_WORK)/linux,target=/home/vagrant/MYiR-iMX-Linux \
-		--mount type=bind,source=$(DIR_WORK)/uboot,target=/home/vagrant/MYiR-iMX-Uboot \
-		--mount type=bind,source=$(DIR_WORK)/workspace,target=/home/vagrant/workspace \
-		--mount type=bind,source=$(DIR_WORK)/yocto,target=/home/vagrant/yocto \
-		--name $(IMG_NAME) \
+	$(DOCKER) run -e LOCAL_USER_ID=$(shell id -u $$USER) -itd \
+		--privileged \
+		--mount type=bind,source=$(DIR_WORK)/orangepi-build,target=/home/vagrant/orangepi-build \
+		--name $(CONTAINER_NAME) \
 		$(IMG_NAME) \
 		/bin/bash
 
 down:
-	docker container stop $(IMG_NAME)
-	docker container rm $(IMG_NAME)
+	$(DOCKER) container stop $(CONTAINER_NAME)
+	$(DOCKER) container rm $(CONTAINER_NAME)
 
 startup:
-	docker start ${IMG_NAME} 
+	$(DOCKER) start $(CONTAINER_NAME)
 
 ssh:
-	ssh vagrant@$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(IMG_NAME))
-	
+	ssh vagrant@$(shell ${DOCKER} inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(CONTAINER_NAME))
+
 clean:
 	rm -rf tmp/

@@ -1,9 +1,0 @@
-version: '3.5'
-services:
-  lede-build-env:
-    container_name: lede-build-env 
-    image: lede-build-env
-    environment:
-      LOCAL_USER_ID: ${LOCAL_USER_ID}
-    tty: true
-    command: "bash"
