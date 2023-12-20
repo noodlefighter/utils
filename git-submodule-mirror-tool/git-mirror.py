@@ -13,36 +13,38 @@ ROOTDIR = os.getcwd()
 
 CONFIG_FILE = "submodule-mirrors.txt"
 m_dict = {}
-with open(CONFIG_FILE, 'r') as f:
-    for line in f:
-        n = 0
-        line = line.strip()
-        if line:
-            n += 1
-            s = line.split('|')
-            if len(s) < 3:
-                print('ignore line %d, invalid format' % n)
-                continue
-            submodule_path = s[0]
-            source_url = s[1]
-            mirror_name = s[2]
-            if len(s) >= 4:
-                submodule_name = s[3]
-            else:
-                submodule_name = ''
 
-            submodule_path = submodule_path.strip()
-            source_url = source_url.strip()
-            mirror_name = mirror_name.strip()
-            submodule_name = submodule_name.strip()
+def open_dict():
+    with open(CONFIG_FILE, 'r') as f:
+        for line in f:
+            n = 0
+            line = line.strip()
+            if line:
+                n += 1
+                s = line.split('|')
+                if len(s) < 3:
+                    print('ignore line %d, invalid format' % n)
+                    continue
+                submodule_path = s[0]
+                source_url = s[1]
+                mirror_name = s[2]
+                if len(s) >= 4:
+                    submodule_name = s[3]
+                else:
+                    submodule_name = ''
 
-            m_dict[submodule_path] = {
-                'source_url': source_url,
-                'mirror_http': MIRROR_SITE_HTTP % mirror_name,
-                'mirror_ssh': MIRROR_SITE_SSH % mirror_name,
-                'mirror_name': mirror_name,
-                'submodule_name': submodule_name
-            }
+                submodule_path = submodule_path.strip()
+                source_url = source_url.strip()
+                mirror_name = mirror_name.strip()
+                submodule_name = submodule_name.strip()
+
+                m_dict[submodule_path] = {
+                    'source_url': source_url,
+                    'mirror_http': MIRROR_SITE_HTTP % mirror_name,
+                    'mirror_ssh': MIRROR_SITE_SSH % mirror_name,
+                    'mirror_name': mirror_name,
+                    'submodule_name': submodule_name
+                }
 
 # for m in m_dict:
 #     print("[%s] %s -> %s" % (m, m_dict[m]['source_url'], m_dict[m]['mirror_http']))
@@ -89,14 +91,14 @@ def submodule_update_recursive(module_dir):
             submodule_name = m_dict[entire_m]['submodule_name']
             if submodule_name == '':
                 submodule_name = m
-            subprocess.run(['git', '-C', module_path, 'config', '-f', '.gitmodules', 'submodule.' + submodule_name + '.url', mirror_http])
             print("set %s -> %s"%(m, mirror_http))
+            subprocess.check_call(['git', '-C', module_path, 'config', '-f', '.gitmodules', 'submodule.' + submodule_name + '.url', mirror_http])
 
     # 拉取
-    subprocess.run(['git', '-C', module_path, 'submodule', 'update', '--init'])
+    subprocess.check_call(['git', '-C', module_path, 'submodule', 'update', '--init'])
 
     # 同步url
-    subprocess.run(['git', '-C', module_path, 'submodule', 'sync'])
+    subprocess.check_call(['git', '-C', module_path, 'submodule', 'sync'])
 
     # 递归遍例每个子模块
     for m in modules:
@@ -159,10 +161,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.command == 'update-submodules':
+        open_dict()
         submodule_update_recursive('')
     elif args.command == 'show':
         show_submodules()
     elif args.command == 'push':
+        open_dict()
         push_mirror_bare(args.submodule)
     else:
         parser.print_help()
